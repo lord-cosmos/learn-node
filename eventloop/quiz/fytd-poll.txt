@@ -1,1 +1,19 @@
 - In eventloop/poll.js, what will be the order of execution? Briefly explain the order of execution w.r.t the event loop phases.
+
+THe order of execution : 
+foo
+done
+Read Error
+
+
+line 14, call is a async operation, so it will be started
+outside of main thread - on a worker thread, once read is complete the callback from line 4 
+will be enqueued to pending callback queue.
+
+the foo() -> consoles "foo"
+line 16 consoles "done"
+
+
+the async operation that has been triggered on line 14,
+when all the callbacks are done, if any, present before the callback we enqueued from line 4
+, will be run and "Read Error" will be consoled.
