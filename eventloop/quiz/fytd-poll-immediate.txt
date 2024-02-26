@@ -1,2 +1,35 @@
 - Explain the order of execution in terms of the event loop for eventloop/immediate.js.
+
+
+
+readFile has happend on poll - dng its thing on worker thread.
+its callback will be pushed to pending callback queue as there is no other callbacks from the main thread.
+
+I meant only file I/O is triggered not other calls are there in the program.
+So, the corresponding callback from line 3 will be executed,
+
+the data is already read, as file is there, the data is consoled from line 10,
+
+then timer is triggered on line 13, pushed to timer queue with 5ms
+
+then setImmediate is immediately excuted  - check queue to pending callback queue and it executes.
+Now the timer's callback pushed to pending callback - and it executes.
+
+Therefore, we see  following rder of execution: 
+
+<Buffer 54 68 65 20 70 6f 6c 6c 20 70 68 61 73 65 20 69 73 20 61 63 74 75 61 6c 6c 79 20 61 20 62 6c 6f 63 6b 69 6e 67 20 70 68 61 73 65 2e 20 49 66 20 74 68 ... 861 more bytes>
+I was scheduled to run immediately
+6ms have passed since I was scheduled
+
 - Will the order of execution change if timeout is changed to 0? Why or why not?
+
+No, the order of execution doesnt change if timeout is set to 0, because timer queue has least priority.
+so, check queue will be taken care first, much like what I explained earlier above.
+
+
+- What to change in eventloop/quiz/immedaite.js such that immediate callback runs first?
+
+If we put the setImmediate outside the reafile I/O,  immediate callback will run first.
+
+Becuase call back from check queue will be first put to pending callback than other callback liek timer from line 14. therefore, 
+we see it executing first than any other callbacks from line 4 or line 14.
